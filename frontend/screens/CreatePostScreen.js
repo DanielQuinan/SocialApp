@@ -1,38 +1,22 @@
+// screens/CreatePostScreen.js
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../context/AuthContext';
 import { createPost } from '../services/post';
+import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as ImagePicker from 'expo-image-picker';
 
 export default function CreatePostScreen() {
+  const { user } = useContext(AuthContext);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const { user } = useContext(AuthContext);
   const navigation = useNavigation();
-
-  const handleImagePick = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.cancelled) {
-      setImageUrl(result.uri);
-    }
-  };
 
   const handleSubmit = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
       await createPost({ title, content, imageUrl }, token);
-      setTitle('');
-      setContent('');
-      setImageUrl('');
       navigation.navigate('Home');
     } catch (error) {
       console.error('Erro ao criar publicação', error);
@@ -50,15 +34,20 @@ export default function CreatePostScreen() {
         required
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, styles.textArea]}
         value={content}
         onChangeText={setContent}
         placeholder="Conteúdo"
         required
+        multiline
+        numberOfLines={4}
       />
-      <TouchableOpacity onPress={handleImagePick} style={styles.imagePicker}>
-        <Text style={styles.imagePickerText}>Escolha uma imagem</Text>
-      </TouchableOpacity>
+      <TextInput
+        style={styles.input}
+        value={imageUrl}
+        onChangeText={setImageUrl}
+        placeholder="URL da Imagem"
+      />
       <Button title="Criar Publicação" onPress={handleSubmit} />
     </View>
   );
@@ -83,15 +72,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     marginBottom: 16,
   },
-  imagePicker: {
-    backgroundColor: '#0070f3',
-    padding: 8,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  imagePickerText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  textArea: {
+    height: 100,
   },
 });

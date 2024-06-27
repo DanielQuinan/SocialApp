@@ -4,13 +4,13 @@ import { AuthContext } from '../context/AuthContext';
 import { getProfile, updateProfile } from '../services/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 
 export default function ProfileScreen() {
   const { user, updateUser, logout } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [profileImage, setProfileImage] = useState(null);
-  const [profileImagePreview, setProfileImagePreview] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -19,7 +19,7 @@ export default function ProfileScreen() {
         if (token) {
           const data = await getProfile(token);
           setName(data.name);
-          setProfileImagePreview(data.profileImageUrl);
+          setProfileImage(data.profileImageUrl);
         }
       } catch (error) {
         console.error('Erro ao buscar dados do usuário', error);
@@ -38,8 +38,8 @@ export default function ProfileScreen() {
     });
 
     if (!result.cancelled) {
-      setProfileImage(result.uri);
-      setProfileImagePreview(result.uri);
+      const base64Image = await FileSystem.readAsStringAsync(result.uri, { encoding: 'base64' });
+      setProfileImage(`data:image/jpeg;base64,${base64Image}`);
     }
   };
 
@@ -50,12 +50,7 @@ export default function ProfileScreen() {
       formData.append('password', password);
     }
     if (profileImage) {
-      let localUri = profileImage;
-      let filename = localUri.split('/').pop();
-      let match = /\.(\w+)$/.exec(filename);
-      let type = match ? `image/${match[1]}` : `image`;
-
-      formData.append('profileImage', { uri: localUri, name: filename, type });
+      formData.append('profileImage', profileImage);
     }
     try {
       const token = await AsyncStorage.getItem('token');
@@ -70,7 +65,6 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Editar Perfil</Text>
-      {profileImagePreview && <Image source={{ uri: profileImagePreview }} style={styles.profileImage} />}
       <TextInput
         style={styles.input}
         value={name}
@@ -88,6 +82,7 @@ export default function ProfileScreen() {
       <TouchableOpacity onPress={handleImagePick} style={styles.imagePicker}>
         <Text style={styles.imagePickerText}>Escolha uma imagem</Text>
       </TouchableOpacity>
+      {profileImage && <Image source={{ uri: profileImage }} style={styles.image} />}
       <Button title="Salvar" onPress={handleSubmit} />
       <Button title="Logout" onPress={logout} color="#ff0000" />
     </View>
@@ -124,11 +119,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  profileImage: {
+  image: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    alignSelf: 'center',
     marginBottom: 16,
   },
 });

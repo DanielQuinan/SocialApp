@@ -15,7 +15,7 @@ export default function Navbar() {
         {user ? (
           <>
             <li>Bem-vindo, {user.name}</li>
-            <li><Link href="/create-event">Criar Evento</Link></li>
+            <li><Link href="/create-post">Criar Publicação</Link></li>
             <li><Link href="/profile">Editar Perfil</Link></li>
             <li><button onClick={logout}>Logoff</button></li>
           </>

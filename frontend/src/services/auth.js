@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL + '/api/auth/';
+const API_URL = 'http://localhost:5000/api/users/';
 
 export const register = async (name, email, password) => {
     const response = await axios.post(`${API_URL}register`, {
@@ -26,11 +26,10 @@ export const getProfile = async (token) => {
     return response.data;
 };
 
-export const updateProfile = async (name, password, isAdmin, token) => {
+export const updateProfile = async (name, password, token) => {
     const response = await axios.put(`${API_URL}update`, {
         name,
-        password,
-        isAdmin
+        password
     }, {
         headers: { Authorization: `Bearer ${token}` }
     });

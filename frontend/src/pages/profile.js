@@ -6,7 +6,6 @@ import { getProfile, updateProfile } from '../services/auth';
 export default function Profile() {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
-    const [isAdmin, setIsAdmin] = useState(false);
     const [message, setMessage] = useState('');
     const { user, updateUser } = useContext(AuthContext);
     const router = useRouter();
@@ -21,7 +20,6 @@ export default function Profile() {
                 }
                 const data = await getProfile(token);
                 setName(data.name);
-                setIsAdmin(data.isAdmin);
             } catch (error) {
                 console.error('Erro ao buscar dados do usuário', error);
             }
@@ -34,7 +32,7 @@ export default function Profile() {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            await updateProfile(name, password, isAdmin, token);
+            await updateProfile(name, password, token);
             updateUser();
             setMessage('Perfil atualizado com sucesso!');
         } catch (error) {
@@ -60,15 +58,6 @@ export default function Profile() {
                     onChange={(e) => setPassword(e.target.value)} 
                     placeholder="Senha" 
                 />
-                <label>
-                  Administrador
-                    <input 
-                        type="checkbox" 
-                        checked={isAdmin} 
-                        onChange={(e) => setIsAdmin(e.target.checked)} 
-                    />
-                    
-                </label>
                 <button type="submit">Salvar</button>
             </form>
             <style jsx>{`
@@ -112,13 +101,6 @@ export default function Profile() {
                 }
                 form button:hover {
                     background-color: #005bb5;
-                }
-                label {
-                    display: block;
-                    margin-bottom: 1rem;
-                }
-                label input {
-                    margin-right: 0.5rem;
                 }
             `}</style>
         </div>

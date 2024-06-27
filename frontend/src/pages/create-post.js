@@ -1,31 +1,29 @@
 import { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
-import { createEvent } from '../services/events';
+import { createPost } from '../services/post';
 import AuthContext from '../context/AuthContext';
 
-export default function CreateEvent() {
+export default function CreatePost() {
   const { user } = useContext(AuthContext);
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState('');
-  const [location, setLocation] = useState('');
-  const [slots, setSlots] = useState(0);
+  const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await createEvent({ title, description, date, location, slots }, token);
+      await createPost({ title, content, imageUrl }, token);
       router.push('/');
     } catch (error) {
-      console.error('Erro ao criar evento', error);
+      console.error('Erro ao criar publicação', error);
     }
   };
 
   return (
     <div className="container">
-      <h1>Criar Evento</h1>
+      <h1>Criar Publicação</h1>
       <form onSubmit={handleSubmit}>
         <input 
           type="text" 
@@ -35,32 +33,18 @@ export default function CreateEvent() {
           required 
         />
         <textarea 
-          value={description} 
-          onChange={(e) => setDescription(e.target.value)} 
-          placeholder="Descrição" 
-          required 
-        />
-        <input 
-          type="date" 
-          value={date} 
-          onChange={(e) => setDate(e.target.value)} 
+          value={content} 
+          onChange={(e) => setContent(e.target.value)} 
+          placeholder="Conteúdo" 
           required 
         />
         <input 
           type="text" 
-          value={location} 
-          onChange={(e) => setLocation(e.target.value)} 
-          placeholder="Local" 
-          required 
+          value={imageUrl} 
+          onChange={(e) => setImageUrl(e.target.value)} 
+          placeholder="URL da Imagem" 
         />
-        <input 
-          type="number" 
-          value={slots} 
-          onChange={(e) => setSlots(e.target.value)} 
-          placeholder="Vagas" 
-          required 
-        />
-        <button type="submit">Criar Evento</button>
+        <button type="submit">Criar Publicação</button>
       </form>
       <style jsx>{`
         .container {

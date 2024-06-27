@@ -46,6 +46,23 @@ export default function Register() {
                 />
                 <button type="submit">Registrar</button>
             </form>
+            <style jsx>{`
+                .container {
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 2rem;
+                    background: #fff;
+                    border-radius: 5px;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                }
+                form {
+                    display: flex;
+                    flex-direction: column;
+                }
+                input, button {
+                    margin-bottom: 1rem;
+                }
+            `}</style>
         </div>
     );
 }

@@ -1,6 +1,7 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://localhost:5000/api/posts/';
+const API_URL = 'http://192.168.0.107:5000/api/posts/';
 
 export const createPost = async (post, token) => {
   const response = await axios.post(API_URL, post, {

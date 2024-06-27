@@ -3,7 +3,19 @@ const User = require('../models/User'); // Certifique-se de importar o modelo Us
 
 exports.getPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate('author', 'name').populate('comments.author', 'name');
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .populate('author', 'name profileImageUrl')
+      .populate({
+        path: 'comments.author',
+        select: 'name profileImageUrl'
+      });
+
+    // Ordenar os comentários de cada post
+    posts.forEach(post => {
+      post.comments.sort((a, b) => b.createdAt - a.createdAt);
+    });
+
     res.status(200).json(posts);
   } catch (error) {
     console.error('Erro ao buscar publicações:', error);
@@ -23,7 +35,7 @@ exports.createPost = async (req, res) => {
     });
 
     const savedPost = await post.save();
-    const populatedPost = await savedPost.populate('author', 'name');
+    const populatedPost = await savedPost.populate('author', 'name profileImageUrl');
     res.status(201).json(populatedPost);
   } catch (error) {
     console.error('Erro ao criar publicação:', error);
@@ -70,7 +82,16 @@ exports.likePost = async (req, res) => {
     }
 
     await post.save();
-    post = await Post.findById(id).populate('author', 'name').populate('comments.author', 'name');
+    post = await Post.findById(id)
+      .populate('author', 'name profileImageUrl')
+      .populate({
+        path: 'comments.author',
+        select: 'name profileImageUrl'
+      });
+
+
+    post.comments.sort((a, b) => b.createdAt - a.createdAt);
+
     res.json(post);
   } catch (error) {
     console.error('Erro ao curtir publicação:', error);
@@ -91,7 +112,16 @@ exports.commentPost = async (req, res) => {
 
     post.comments.push({ text, author: req.user.id });
     await post.save();
-    post = await Post.findById(id).populate('author', 'name').populate('comments.author', 'name');
+    post = await Post.findById(id)
+      .populate('author', 'name profileImageUrl')
+      .populate({
+        path: 'comments.author',
+        select: 'name profileImageUrl'
+      });
+
+
+    post.comments.sort((a, b) => b.createdAt - a.createdAt);
+
     res.json(post);
   } catch (error) {
     console.error('Erro ao comentar publicação:', error);
@@ -119,9 +149,17 @@ exports.deleteComment = async (req, res) => {
       return res.status(403).json({ message: 'Usuário não autorizado' });
     }
 
-    post.comments.pull(commentId);
+    post.comments.pull({ _id: commentId });
     await post.save();
-    post = await Post.findById(postId).populate('author', 'name').populate('comments.author', 'name');
+    post = await Post.findById(postId)
+      .populate('author', 'name profileImageUrl')
+      .populate({
+        path: 'comments.author',
+        select: 'name profileImageUrl'
+      });
+
+    post.comments.sort((a, b) => b.createdAt - a.createdAt);
+
     res.json(post);
   } catch (error) {
     console.error('Erro ao remover comentário:', error);

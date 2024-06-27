@@ -7,6 +7,7 @@ export default function Profile() {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [profileImage, setProfileImage] = useState(null);
     const { user, updateUser } = useContext(AuthContext);
     const router = useRouter();
 
@@ -30,9 +31,17 @@ export default function Profile() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const formData = new FormData();
+        formData.append('name', name);
+        if (password) {
+            formData.append('password', password);
+        }
+        if (profileImage) {
+            formData.append('profileImage', profileImage);
+        }
         try {
             const token = localStorage.getItem('token');
-            await updateProfile(name, password, token);
+            await updateProfile(formData, token);
             updateUser();
             setMessage('Perfil atualizado com sucesso!');
         } catch (error) {
@@ -57,6 +66,11 @@ export default function Profile() {
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
                     placeholder="Senha" 
+                />
+                <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => setProfileImage(e.target.files[0])} 
                 />
                 <button type="submit">Salvar</button>
             </form>

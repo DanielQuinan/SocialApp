@@ -26,12 +26,12 @@ export const getProfile = async (token) => {
     return response.data;
 };
 
-export const updateProfile = async (name, password, token) => {
-    const response = await axios.put(`${API_URL}update`, {
-        name,
-        password
-    }, {
-        headers: { Authorization: `Bearer ${token}` }
+export const updateProfile = async (formData, token) => {
+    const response = await axios.put(`${API_URL}update`, formData, {
+        headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+        }
     });
     return response.data;
 };

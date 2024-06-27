@@ -74,7 +74,12 @@ export default function Home() {
                 <h2>{post.title}</h2>
                 <p>{post.content}</p>
                 {post.imageUrl && <img src={post.imageUrl} alt={post.title} />}
-                <p>Autor: {post.author.name}</p>
+                <div className="author">
+                  {post.author.profileImageUrl && (
+                    <img src={post.author.profileImageUrl} alt={post.author.name} className="profile-image" />
+                  )}
+                  <p>{post.author.name}</p>
+                </div>
                 <button onClick={() => handleLike(post._id)}>
                   {post.likes.includes(user?._id) ? 'Descurtir' : 'Curtir'} ({post.likes.length})
                 </button>
@@ -90,7 +95,12 @@ export default function Home() {
                 <ul>
                   {post.comments.map((comment) => (
                     <li key={comment._id}>
-                      <p>{comment.text} - {comment.author.name}</p>
+                      <div className="comment">
+                        {comment.author.profileImageUrl && (
+                          <img src={comment.author.profileImageUrl} alt={comment.author.name} className="profile-image" />
+                        )}
+                        <p>{comment.text} - {comment.author.name}</p>
+                      </div>
                       {comment.author._id === user?._id && (
                         <button onClick={() => handleDeleteComment(post._id, comment._id)}>Excluir</button>
                       )}
@@ -147,6 +157,16 @@ export default function Home() {
         }
         input {
           margin-right: 0.5rem;
+        }
+        .profile-image {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          margin-right: 0.5rem;
+        }
+        .author, .comment {
+          display: flex;
+          align-items: center;
         }
       `}</style>
     </div>

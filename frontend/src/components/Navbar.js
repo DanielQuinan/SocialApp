@@ -14,7 +14,12 @@ export default function Navbar() {
         <li><Link href="/">Home</Link></li>
         {user ? (
           <>
-            <li>Bem-vindo, {user.name}</li>
+            <li>
+              {user.profileImageUrl && (
+                <img src={user.profileImageUrl} alt="Profile" className="profile-image" />
+              )}
+              Bem-vindo, {user.name}
+            </li>
             <li><Link href="/create-post">Criar Publicação</Link></li>
             <li><Link href="/profile">Editar Perfil</Link></li>
             <li><button onClick={logout}>Logoff</button></li>
@@ -46,6 +51,8 @@ export default function Navbar() {
         }
         li {
           margin-left: 1rem;
+          display: flex;
+          align-items: center;
         }
         li a, li button {
           color: #fff;
@@ -54,6 +61,12 @@ export default function Navbar() {
           border: none;
           cursor: pointer;
           font: inherit;
+        }
+        .profile-image {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          margin-right: 0.5rem;
         }
       `}</style>
     </nav>

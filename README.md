@@ -1,4 +1,5 @@
-# Todo_List_ReactNative
+# SocialApp
+Projeto desenvolvido como atividade avaliativa acadêmica
 
 ## Dependências
 * Node
